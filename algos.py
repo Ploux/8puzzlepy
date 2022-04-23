@@ -1,9 +1,5 @@
 """
 algos.py
-4/23/22
-1. Determine which algorithms are possible to implement
-2. Determine the data structures needed
-3. Prepare to convert to javascript
 """
 
 import random
@@ -13,6 +9,7 @@ import sys
 
 from collections import defaultdict, deque, Counter
 from itertools import combinations
+
 
 ## PROBLEM
 
@@ -118,8 +115,8 @@ class PriorityQueue:
 """Best-first search with various f(n) functions gives us different search algorithms. Note that A*, weighted A* and greedy search can be given a heuristic function, h, but if h is not supplied they use the problem's default h function (if the problem does not define one, it is taken as h(n) = 0).
 
 start with best_first_search => breadth_first_bfs
-1. remove all other algos until minimum code remains
-2. fix tile order
+X1. remove all other algos until minimum code remains
+X2. fix tile order
 3. try measurement algorithm
 """
 
@@ -180,16 +177,6 @@ class EightPuzzle(Problem):
         s[action], s[blank] = s[blank], s[action]
         return tuple(s)
 
-    def h1(self, node):
-        """The misplaced tiles heuristic."""
-        return hamming_distance(node.state, self.goal)
-
-    def h2(self, node):
-        """The Manhattan heuristic."""
-        X = (0, 1, 2, 0, 1, 2, 0, 1, 2)
-        Y = (0, 0, 0, 1, 1, 1, 2, 2, 2)
-        return sum(abs(X[s] - X[g]) + abs(Y[s] - Y[g])
-                   for (s, g) in zip(node.state, self.goal) if s != 0)
 
 def inversions(board):
     "The number of times a piece is a smaller number than a following piece."
@@ -225,11 +212,54 @@ class Board(defaultdict):
     def __hash__(self):
         return hash(tuple(sorted(self.items()))) + hash(self.to_move)
 
+# Code to compare searchers on various problems.
+
+
+class InstrumentedProblem(Problem):
+    """Delegates to a problem, and keeps statistics."""
+
+    def __init__(self, problem):
+        self.problem = problem
+        self.succs = self.goal_tests = self.states = 0
+        self.found = None
+
+    def actions(self, state):
+        self.succs += 1
+        return self.problem.actions(state)
+
+    def result(self, state, action):
+        self.states += 1
+        return self.problem.result(state, action)
+
+    def goal_test(self, state):
+        self.goal_tests += 1
+        result = self.problem.goal_test(state)
+        if result:
+            self.found = state
+        return result
+
+    def path_cost(self, c, state1, action, state2):
+        return self.problem.path_cost(c, state1, action, state2)
+
+    def value(self, state):
+        return self.problem.value(state)
+
+    def __getattr__(self, attr):
+        return getattr(self.problem, attr)
+
+    def __repr__(self):
+        return '<{:4d}/{:4d}/{:4d}/{}>'.format(self.succs, self.goal_tests,
+                                               self.states, str(self.found)[:4])
+
+
+
 
 e5 = EightPuzzle((8, 6, 7, 2, 5, 4, 3, 0, 1))
 ## e5p = EightPuzzle((1, 6, 7, 2, 5, 4, 3, 8, 0)) will get parity error
-
+moves = 0
 for s in path_states(breadth_first_bfs(e5)):
     print(board8(s))
-
+    moves += 1
+print()
+print("Moves: " + str(moves))
 
