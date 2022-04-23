@@ -53,6 +53,14 @@ class EightPuzzle(object):
         """The misplaced tiles heuristic."""
         return hamming_distance(node.state, self.goal)
 
+    def h2(self, node):
+        """The Manhattan heuristic."""
+        X = (0, 1, 2, 0, 1, 2, 0, 1, 2)
+        Y = (0, 0, 0, 1, 1, 1, 2, 2, 2)
+        return sum(abs(X[s] - X[g]) + abs(Y[s] - Y[g])
+                   for (s, g) in zip(node.state, self.goal) if s != 0)
+
+
     # def h(self, node): return h1(self, node)
 
 def hamming_distance(A, B):
@@ -216,11 +224,15 @@ def is_cycle(node, k=30):
 
 # Informed Best-First Search Algorithms
 
-def astar_search(problem, h=None):
+def astar_search1(problem, h=None):
     "Search nodes with minimum f(n) = g(n) + h(n)."
     h1 = h or problem.h1
     return best_first_search(problem, f=lambda n: g(n) + h1(n))
 
+def astar_search2(problem, h=None):
+    "Search nodes with minimum f(n) = g(n) + h(n)."
+    h2 = h or problem.h2
+    return best_first_search(problem, f=lambda n: g(n) + h2(n))
 
 #############
 
@@ -267,12 +279,11 @@ e5 = EightPuzzle((8, 6, 7, 2, 5, 4, 3, 0, 1))
 ## e5p = EightPuzzle((1, 6, 7, 2, 5, 4, 3, 8, 0)) will get parity error
 
 moves = 0
-for s in path_states( astar_search(e5)):
+for s in path_states( astar_search1(e5)):
     print(board8(s))
     moves += 1
 print()
 print("Moves: " + str(moves - 1))
 
-# 41 0 7 106 103
-
+# 31 0 7 106 103
 
