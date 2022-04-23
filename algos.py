@@ -212,48 +212,6 @@ class Board(defaultdict):
     def __hash__(self):
         return hash(tuple(sorted(self.items()))) + hash(self.to_move)
 
-# Code to compare searchers on various problems.
-
-
-class InstrumentedProblem(Problem):
-    """Delegates to a problem, and keeps statistics."""
-
-    def __init__(self, problem):
-        self.problem = problem
-        self.succs = self.goal_tests = self.states = 0
-        self.found = None
-
-    def actions(self, state):
-        self.succs += 1
-        return self.problem.actions(state)
-
-    def result(self, state, action):
-        self.states += 1
-        return self.problem.result(state, action)
-
-    def goal_test(self, state):
-        self.goal_tests += 1
-        result = self.problem.goal_test(state)
-        if result:
-            self.found = state
-        return result
-
-    def path_cost(self, c, state1, action, state2):
-        return self.problem.path_cost(c, state1, action, state2)
-
-    def value(self, state):
-        return self.problem.value(state)
-
-    def __getattr__(self, attr):
-        return getattr(self.problem, attr)
-
-    def __repr__(self):
-        return '<{:4d}/{:4d}/{:4d}/{}>'.format(self.succs, self.goal_tests,
-                                               self.states, str(self.found)[:4])
-
-
-
-
 e5 = EightPuzzle((8, 6, 7, 2, 5, 4, 3, 0, 1))
 ## e5p = EightPuzzle((1, 6, 7, 2, 5, 4, 3, 8, 0)) will get parity error
 moves = 0
