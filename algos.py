@@ -201,6 +201,7 @@ def is_cycle(node, k=30):
                 (ancestor.state == node.state or find_cycle(ancestor.parent, k - 1)))
     return find_cycle(node.parent, k)
 
+
 #############
 
 class Board(defaultdict):
@@ -246,7 +247,7 @@ e5 = EightPuzzle((8, 6, 7, 2, 5, 4, 3, 0, 1))
 ## e5p = EightPuzzle((1, 6, 7, 2, 5, 4, 3, 8, 0)) will get parity error
 
 moves = 0
-for s in path_states(iterative_deepening_search(e5)):
+for s in path_states(bidirectional_search(e2)):
     print(board8(s))
     moves += 1
 print()
