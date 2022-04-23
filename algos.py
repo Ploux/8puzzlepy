@@ -11,30 +11,43 @@ from collections import defaultdict, deque, Counter
 from itertools import combinations
 
 
-## PROBLEM
+### 8 Puzzle Problems
 
-class Problem(object):
+"""A sliding tile puzzle where you can swap the blank with an adjacent piece, trying to reach a goal configuration. The cells are numbered 0 to 8, starting at the top left and going row by row left to right. The pieces are numebred 1 to 8, with 0 representing the blank. An action is the cell index number that is to be swapped with the blank (not the actual number to be swapped but the index into the state). So the diagram above left is the state (5, 2, 7, 8, 4, 0, 1, 3, 6), and the action is 8, because the cell number 8 (the 9th or last cell, the 6 in the bottom right) is swapped with the blank.
 
+There are two disjoint sets of states that cannot be reached from each other. One set has an even number of "inversions"; the other has an odd number. An inversion is when a piece in the state is larger than a piece that follows it."""
+
+
+class EightPuzzle(object):
+    """ The problem of sliding tiles numbered from 1 to 8 on a 3x3 board,
+    where one of the squares is a blank, trying to reach a goal configuration.
+    A board state is represented as a tuple of length 9, where the element at index i
+    represents the tile number at index i, or 0 if for the empty square, e.g. the goal:
+        1 2 3
+        4 5 6 ==> (1, 2, 3, 4, 5, 6, 7, 8, 0)
+        7 8 _
     """
-    The abstract class for a formal problem.
-    A new domain subclasses this, overriding `actions` and `results`, and perhaps other methods.
-    The default heuristic is 0 and the default action cost is 1 for all states.
-    When you create an instance of a subclass, specify `initial`, and `goal` states  (or give an `is_goal` method) and perhaps other keyword args for the subclass.
 
-    Q: do we need this (i.e. can we make a more specific one just for 8 puzzle), and how is it used
-    """
-    def __init__(self, initial=None, goal=None, **kwds):
-        self.__dict__.update(initial=initial, goal=goal, **kwds)
+    def __init__(self, initial, goal=(1, 2, 3, 4, 5, 6, 7, 8, 0)):
+        assert inversions(initial) % 2 == inversions(goal) % 2 # Parity check
+        self.initial, self.goal = initial, goal
 
-    def actions(self, state):        raise NotImplementedError
-    def result(self, state, action): raise NotImplementedError
+    def actions(self, state):
+        """The indexes of the squares that the blank can move to."""
+        moves = ((1, 3),    (0, 2, 4),    (1, 5),
+                 (0, 4, 6), (1, 3, 5, 7), (2, 4, 8),
+                 (3, 7),    (4, 6, 8),    (7, 5))
+        blank = state.index(0)
+        return moves[blank]
+
+    def result(self, state, action):
+        """Swap the blank with the square numbered `action`."""
+        s = list(state)
+        blank = state.index(0)
+        s[action], s[blank] = s[blank], s[action]
+        return tuple(s)
+
     def is_goal(self, state):        return state == self.goal
-    def action_cost(self, s, a, s1): return 1
-    def h(self, node):               return 0
-
-    def __str__(self):
-        return '{}({!r}, {!r})'.format(
-            type(self).__name__, self.initial, self.goal)
 
 
 ## NODE
@@ -58,7 +71,7 @@ def expand(problem, node):
     s = node.state
     for action in problem.actions(s):
         s1 = problem.result(s, action)
-        cost = node.path_cost + problem.action_cost(s, action, s1)
+        cost = node.path_cost
         yield Node(s1, node, action, cost)
 
 
@@ -76,12 +89,11 @@ def path_states(node):
     return path_states(node.parent) + [node.state]
 
 
-## QUEUE
+## QUEUES
 
 """
 First-in-first-out and Last-in-first-out queues, and a PriorityQueue, which allows you to keep a collection of items, and continually remove from it the item with minimum f(item) score.
 
-We will need to implement FIFOQueue and LIFOQueue in JS
 """
 
 FIFOQueue = deque
@@ -113,11 +125,6 @@ class PriorityQueue:
 ## Search Algorithms: Best-First
 
 """Best-first search with various f(n) functions gives us different search algorithms. Note that A*, weighted A* and greedy search can be given a heuristic function, h, but if h is not supplied they use the problem's default h function (if the problem does not define one, it is taken as h(n) = 0).
-
-start with best_first_search => breadth_first_bfs
-X1. remove all other algos until minimum code remains
-X2. fix tile order
-3. try measurement algorithm
 """
 
 def best_first_search(problem, f):
@@ -140,43 +147,26 @@ def breadth_first_bfs(problem):
     "Search shallowest nodes in the search tree first; using best-first."
     return best_first_search(problem, f=len)
 
+"""
+def breadth_first_search(problem):
+    "Search shallowest nodes in the search tree first. Just a variant of breadth_first_bfs that doesn't use best-first"
 
-### 8 Puzzle Problems
-
-"""A sliding tile puzzle where you can swap the blank with an adjacent piece, trying to reach a goal configuration. The cells are numbered 0 to 8, starting at the top left and going row by row left to right. The pieces are numebred 1 to 8, with 0 representing the blank. An action is the cell index number that is to be swapped with the blank (not the actual number to be swapped but the index into the state). So the diagram above left is the state (5, 2, 7, 8, 4, 0, 1, 3, 6), and the action is 8, because the cell number 8 (the 9th or last cell, the 6 in the bottom right) is swapped with the blank.
-
-There are two disjoint sets of states that cannot be reached from each other. One set has an even number of "inversions"; the other has an odd number. An inversion is when a piece in the state is larger than a piece that follows it."""
-
-
-class EightPuzzle(Problem):
-    """ The problem of sliding tiles numbered from 1 to 8 on a 3x3 board,
-    where one of the squares is a blank, trying to reach a goal configuration.
-    A board state is represented as a tuple of length 9, where the element at index i
-    represents the tile number at index i, or 0 if for the empty square, e.g. the goal:
-        1 2 3
-        4 5 6 ==> (1, 2, 3, 4, 5, 6, 7, 8, 0)
-        7 8 _
-    """
-
-    def __init__(self, initial, goal=(1, 2, 3, 4, 5, 6, 7, 8, 0)):
-        assert inversions(initial) % 2 == inversions(goal) % 2 # Parity check
-        self.initial, self.goal = initial, goal
-
-    def actions(self, state):
-        """The indexes of the squares that the blank can move to."""
-        moves = ((1, 3),    (0, 2, 4),    (1, 5),
-                 (0, 4, 6), (1, 3, 5, 7), (2, 4, 8),
-                 (3, 7),    (4, 6, 8),    (7, 5))
-        blank = state.index(0)
-        return moves[blank]
-
-    def result(self, state, action):
-        """Swap the blank with the square numbered `action`."""
-        s = list(state)
-        blank = state.index(0)
-        s[action], s[blank] = s[blank], s[action]
-        return tuple(s)
-
+    node = Node(problem.initial)
+    if problem.is_goal(problem.initial):
+        return node
+    frontier = FIFOQueue([node])
+    reached = {problem.initial}
+    while frontier:
+        node = frontier.pop()
+        for child in expand(problem, node):
+            s = child.state
+            if problem.is_goal(s):
+                return child
+            if s not in reached:
+                reached.add(s)
+                frontier.appendleft(child)
+    return failure
+"""
 
 def inversions(board):
     "The number of times a piece is a smaller number than a following piece."
@@ -215,7 +205,7 @@ class Board(defaultdict):
 e5 = EightPuzzle((8, 6, 7, 2, 5, 4, 3, 0, 1))
 ## e5p = EightPuzzle((1, 6, 7, 2, 5, 4, 3, 8, 0)) will get parity error
 moves = 0
-for s in path_states(breadth_first_bfs(e5)):
+for s in path_states(breadth_first_search(e5)):
     print(board8(s))
     moves += 1
 print()
