@@ -5,6 +5,7 @@
 * breadth-first (using priority queue - criteria for best is depth)
 * depth-first (hits recursion limit)
 * depth-limited (with limits of 10, 20, 25, 31)
+* iterative-deepening
 
 **Other Searches**
 * breadth-first (using FIFO queue)
@@ -17,11 +18,12 @@
 | **Depth Limited (10)**         | -1     | 0      | 7      | -1     | -1     |
 | **Depth Limited (20)**         | -1     | 0      | 17     | 20     | -1     |
 | **Depth Limited (25)**         | 23     | 0      | 21     | 24     | -1     |
-| **Depth Limited (31)**         | 31     | 0      | 31     | 30     | 31     |
+| **Depth Limited (31)**         | 31     | 0      | 31     | 30     | 31*    |
+| **Iterative Deepening**        | 23     | 0      | 7      | 20     | ?*     |
 
 re: recursion depth reached
 -1: hit limit before finding solution
-
+\*: take a long-ass time
 
 
 **Branching factor**

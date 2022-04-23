@@ -151,6 +151,13 @@ def depth_first_bfs(problem):
     "Search deepest nodes in the search tree first; using best-first."
     return best_first_search(problem, f=lambda n: -len(n))
 
+def iterative_deepening_search(problem):
+    "Do depth-limited search with increasing depth limits."
+    for limit in range(1, sys.maxsize):
+        result = depth_limited_search(problem, limit)
+        if result != cutoff:
+            return result
+
 # Other Search Algorithms
 
 def breadth_first_search(problem):
@@ -239,17 +246,12 @@ e5 = EightPuzzle((8, 6, 7, 2, 5, 4, 3, 0, 1))
 ## e5p = EightPuzzle((1, 6, 7, 2, 5, 4, 3, 8, 0)) will get parity error
 
 moves = 0
-for s in path_states(depth_limited_search(e5)):
+for s in path_states(iterative_deepening_search(e5)):
     print(board8(s))
     moves += 1
 print()
 print("Moves: " + str(moves - 1))
 
-#bfsbf  23, 0,  7, 20, 31
-#bfs    23, 0,  7, 20, 31
-#dfsbf  re, 0, re, re, re
-#dfs10  -1, 0,  7, -1, -1
-#dfs20  -1, 0, 17, 20, -1
-#dfs25  23, 0, 21, 24, -1
-#dfs31  31, 0, 31, 30
+# 23 0 7 20
+
 
