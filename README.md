@@ -29,11 +29,11 @@
 | **A-star (misplaced tiles)**    | 41     | 0      | 7      | 106    | 103    |
 | **A-star (Manhattan distance)** | 31     | 0      | 7      | 106    | 103    |
 
-e1 = EightPuzzle((1, 4, 2, 0, 7, 5, 3, 6, 8))
-e2 = EightPuzzle((1, 2, 3, 4, 5, 6, 7, 8, 0)) // already at goal
-e3 = EightPuzzle((4, 0, 2, 5, 1, 3, 7, 8, 6)) // easy one
-e4 = EightPuzzle((7, 2, 4, 5, 0, 6, 8, 3, 1))
-e5 = EightPuzzle((8, 6, 7, 2, 5, 4, 3, 0, 1)) // max optimal solution is 31 moves
+e1 = EightPuzzle((1, 4, 2, 0, 7, 5, 3, 6, 8))\
+e2 = EightPuzzle((1, 2, 3, 4, 5, 6, 7, 8, 0)) // already at goal\
+e3 = EightPuzzle((4, 0, 2, 5, 1, 3, 7, 8, 6)) // easy one\
+e4 = EightPuzzle((7, 2, 4, 5, 0, 6, 8, 3, 1))\
+e5 = EightPuzzle((8, 6, 7, 2, 5, 4, 3, 0, 1)) // max optimal solution is 31 moves\
 
 re: recursion depth reached\
 -1: hit limit before finding solution\
