@@ -122,7 +122,7 @@ class PriorityQueue:
 
     def __len__(self): return len(self.items)
 
-## Search Algorithms: Best-First
+## Best-First Search Algorithms
 
 """Best-first search with various f(n) functions gives us different search algorithms. Note that A*, weighted A* and greedy search can be given a heuristic function, h, but if h is not supplied they use the problem's default h function (if the problem does not define one, it is taken as h(n) = 0).
 """
@@ -147,9 +147,14 @@ def breadth_first_bfs(problem):
     "Search shallowest nodes in the search tree first; using best-first."
     return best_first_search(problem, f=len)
 
-"""
+def depth_first_bfs(problem):
+    "Search deepest nodes in the search tree first; using best-first."
+    return best_first_search(problem, f=lambda n: -len(n))
+
+# Other Search Algorithms
+
 def breadth_first_search(problem):
-    "Search shallowest nodes in the search tree first. Just a variant of breadth_first_bfs that doesn't use best-first"
+    "Search shallowest nodes in the search tree first. Uses a FIFO queue so should be faster (p76 textbook)"
 
     node = Node(problem.initial)
     if problem.is_goal(problem.initial):
@@ -166,16 +171,8 @@ def breadth_first_search(problem):
                 reached.add(s)
                 frontier.appendleft(child)
     return failure
-"""
 
-def inversions(board):
-    "The number of times a piece is a smaller number than a following piece."
-    return sum((a > b and a != 0 and b != 0) for (a, b) in combinations(board, 2))
-
-
-def board8(board, fmt=(3 * '{} {} {}\n')):
-    "A string representing an 8-puzzle board"
-    return fmt.format(*board).replace('0', '_')
+#############
 
 class Board(defaultdict):
     empty = '.'
@@ -202,12 +199,31 @@ class Board(defaultdict):
     def __hash__(self):
         return hash(tuple(sorted(self.items()))) + hash(self.to_move)
 
+def inversions(board):
+    "The number of times a piece is a smaller number than a following piece."
+    return sum((a > b and a != 0 and b != 0) for (a, b) in combinations(board, 2))
+
+
+def board8(board, fmt=(3 * '{} {} {}\n')):
+    "A string representing an 8-puzzle board"
+    return fmt.format(*board).replace('0', '_')
+
+
+e1 = EightPuzzle((1, 4, 2, 0, 7, 5, 3, 6, 8))
+e2 = EightPuzzle((1, 2, 3, 4, 5, 6, 7, 8, 0))
+e3 = EightPuzzle((4, 0, 2, 5, 1, 3, 7, 8, 6))
+e4 = EightPuzzle((7, 2, 4, 5, 0, 6, 8, 3, 1))
 e5 = EightPuzzle((8, 6, 7, 2, 5, 4, 3, 0, 1))
 ## e5p = EightPuzzle((1, 6, 7, 2, 5, 4, 3, 8, 0)) will get parity error
+
 moves = 0
-for s in path_states(breadth_first_search(e5)):
+for s in path_states(depth_first_bfs(e4)):
     print(board8(s))
     moves += 1
 print()
-print("Moves: " + str(moves))
+print("Moves: " + str(moves - 1))
+
+#bfsbf  23, 0, 7, 20, 31
+#bfs    23, 0, 7, 20, 31
+#dfsbf  re, 0, r, re, re
 
