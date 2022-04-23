@@ -49,6 +49,15 @@ class EightPuzzle(object):
 
     def is_goal(self, state):        return state == self.goal
 
+    def h1(self, node):
+        """The misplaced tiles heuristic."""
+        return hamming_distance(node.state, self.goal)
+
+    # def h(self, node): return h1(self, node)
+
+def hamming_distance(A, B):
+    "Number of positions where vectors A and B are different."
+    return sum(a != b for a, b in zip(A, B))
 
 ## NODE
 
@@ -127,6 +136,8 @@ class PriorityQueue:
 """Best-first search with various f(n) functions gives us different search algorithms. Note that A*, weighted A* and greedy search can be given a heuristic function, h, but if h is not supplied they use the problem's default h function (if the problem does not define one, it is taken as h(n) = 0).
 """
 
+def g(n): return n.path_cost
+
 def best_first_search(problem, f):
     "Search nodes with minimum f(node) value first."
     node = Node(problem.initial)
@@ -158,7 +169,9 @@ def iterative_deepening_search(problem):
         if result != cutoff:
             return result
 
-# Other Search Algorithms
+
+
+# Other Uninformed Search Algorithms
 
 def breadth_first_search(problem):
     "Search shallowest nodes in the search tree first. Uses a FIFO queue so should be faster (p76 textbook)"
@@ -200,6 +213,13 @@ def is_cycle(node, k=30):
         return (ancestor is not None and k > 0 and
                 (ancestor.state == node.state or find_cycle(ancestor.parent, k - 1)))
     return find_cycle(node.parent, k)
+
+# Informed Best-First Search Algorithms
+
+def astar_search(problem, h=None):
+    "Search nodes with minimum f(n) = g(n) + h(n)."
+    h1 = h or problem.h1
+    return best_first_search(problem, f=lambda n: g(n) + h1(n))
 
 
 #############
@@ -247,12 +267,12 @@ e5 = EightPuzzle((8, 6, 7, 2, 5, 4, 3, 0, 1))
 ## e5p = EightPuzzle((1, 6, 7, 2, 5, 4, 3, 8, 0)) will get parity error
 
 moves = 0
-for s in path_states(bidirectional_search(e2)):
+for s in path_states( astar_search(e5)):
     print(board8(s))
     moves += 1
 print()
 print("Moves: " + str(moves - 1))
 
-# 23 0 7 20
+# 41 0 7 106 103
 
 

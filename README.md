@@ -1,14 +1,18 @@
 # 8puzzlepy
 8 puzzle algorithm code in python
 
-**Best First Searches**
-* breadth-first (using priority queue - criteria for best is depth)
+**Uninformed Best First Searches**
+* breadth-first (using priority queue - criteria for priority is depth)
 * depth-first (hits recursion limit)
 * depth-limited (with limits of 10, 20, 25, 31)
 * iterative-deepening
 
-**Other Searches**
-* breadth-first (using FIFO queue)
+**Other Uninformed Searches**
+* breadth-first (using FIFO queue, same move count, but should be faster)
+
+**Informed Searches**
+* A-star (misplaced tiles heuristic)
+
 
 | **Algorithm**                  | **e1** | **e2** | **e3** | **e4** | **e5** |
 |--------------------------------|--------|--------|--------|--------|--------|
@@ -20,10 +24,11 @@
 | **Depth Limited (25)**         | 23     | 0      | 21     | 24     | -1     |
 | **Depth Limited (31)**         | 31     | 0      | 31     | 30     | 31*    |
 | **Iterative Deepening**        | 23     | 0      | 7      | 20     | ?*     |
+| **A-star (misplaced tiles)**   | 41     | 0      | 7      | 106    | 103    |
 
 re: recursion depth reached\
 -1: hit limit before finding solution\
-\*: take a long-ass time\
+\*: take a long-ass time
 
 **Too hard / takes too long to implement**
 - bidirectional search
@@ -49,8 +54,8 @@ xxx
 states = ~2.57 x 10^13
 
 
-
-4/23/22
+## 4/23/22
 1. Determine which algorithms are possible to implement
+    - go thru chapter 3 first
 2. Determine the data structures needed
 3. Prepare to convert to javascript
