@@ -21,9 +21,9 @@
 | **Depth Limited (31)**         | 31     | 0      | 31     | 30     | 31*    |
 | **Iterative Deepening**        | 23     | 0      | 7      | 20     | ?*     |
 
-re: recursion depth reached
--1: hit limit before finding solution
-\*: take a long-ass time
+re: recursion depth reached\
+-1: hit limit before finding solution\
+\*: take a long-ass time\
 
 **Too hard / takes too long to implement**
 - bidirectional search
