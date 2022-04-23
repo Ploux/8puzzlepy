@@ -172,6 +172,28 @@ def breadth_first_search(problem):
                 frontier.appendleft(child)
     return failure
 
+def depth_limited_search(problem, limit=31):
+    "Search deepest nodes in the search tree first, quit checking if depth = limit."
+    frontier = LIFOQueue([Node(problem.initial)])
+    result = failure
+    while frontier:
+        node = frontier.pop()
+        if problem.is_goal(node.state):
+            return node
+        elif len(node) >= limit:
+            result = cutoff
+        elif not is_cycle(node):
+            for child in expand(problem, node):
+                frontier.append(child)
+    return result
+
+def is_cycle(node, k=30):
+    "Does this node form a cycle of length k or less?"
+    def find_cycle(ancestor, k):
+        return (ancestor is not None and k > 0 and
+                (ancestor.state == node.state or find_cycle(ancestor.parent, k - 1)))
+    return find_cycle(node.parent, k)
+
 #############
 
 class Board(defaultdict):
@@ -217,13 +239,17 @@ e5 = EightPuzzle((8, 6, 7, 2, 5, 4, 3, 0, 1))
 ## e5p = EightPuzzle((1, 6, 7, 2, 5, 4, 3, 8, 0)) will get parity error
 
 moves = 0
-for s in path_states(depth_first_bfs(e4)):
+for s in path_states(depth_limited_search(e5)):
     print(board8(s))
     moves += 1
 print()
 print("Moves: " + str(moves - 1))
 
-#bfsbf  23, 0, 7, 20, 31
-#bfs    23, 0, 7, 20, 31
-#dfsbf  re, 0, r, re, re
+#bfsbf  23, 0,  7, 20, 31
+#bfs    23, 0,  7, 20, 31
+#dfsbf  re, 0, re, re, re
+#dfs10  -1, 0,  7, -1, -1
+#dfs20  -1, 0, 17, 20, -1
+#dfs25  23, 0, 21, 24, -1
+#dfs31  31, 0, 31, 30
 
